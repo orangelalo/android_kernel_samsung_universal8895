@@ -2128,6 +2128,8 @@ repeat:
 			else
 				goto next;
 		}
+		if (is_migrate_rbin_page(page))
+			goto next;
 
 		if (!page_cache_get_speculative(page))
 			goto repeat;
