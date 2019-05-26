@@ -394,16 +394,20 @@ SYSCALL_DEFINE2(setregid, gid_t, rgid, gid_t, egid)
 	int retval;
 	kgid_t krgid, kegid;
 
-#if defined CONFIG_SEC_RESTRICT_SETUID
-	if(rgid == 0 || egid == 0)
-	{
-		if(sec_restrict_uid())
-			return -EACCES;
-	}
-#endif // End of CONFIG_SEC_RESTRICT_SETUID
-
 	krgid = make_kgid(ns, rgid);
 	kegid = make_kgid(ns, egid);
+
+	if ((rgid != (gid_t) -1) && !gid_valid(krgid))
+		return -EINVAL;
+	if ((egid != (gid_t) -1) && !gid_valid(kegid))
+		return -EINVAL;
+
+#if defined CONFIG_SEC_RESTRICT_SETUID
+	if (krgid.val == 0 || kegid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
+	}
+#endif // End of CONFIG_SEC_RESTRICT_SETUID
 
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
@@ -414,11 +418,6 @@ SYSCALL_DEFINE2(setregid, gid_t, rgid, gid_t, egid)
 			return -EACCES;
 	}
 #endif
-
-	if ((rgid != (gid_t) -1) && !gid_valid(krgid))
-		return -EINVAL;
-	if ((egid != (gid_t) -1) && !gid_valid(kegid))
-		return -EINVAL;
 
 	new = prepare_creds();
 	if (!new)
@@ -469,15 +468,16 @@ SYSCALL_DEFINE1(setgid, gid_t, gid)
 	int retval;
 	kgid_t kgid;
 
+	kgid = make_kgid(ns, gid);
+	if (!gid_valid(kgid))
+		return -EINVAL;
+
 #if defined CONFIG_SEC_RESTRICT_SETUID
-	if(gid == 0)
-	{
-		if(sec_restrict_uid())
-			return -EACCES;
+	if (kgid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
 	}
 #endif // End of CONFIG_SEC_RESTRICT_SETUID
-
-	kgid = make_kgid(ns, gid);
 
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
@@ -485,9 +485,6 @@ SYSCALL_DEFINE1(setgid, gid_t, gid)
 			return -EACCES;
 	}
 #endif
-
-	if (!gid_valid(kgid))
-		return -EINVAL;
 
 	new = prepare_creds();
 	if (!new)
@@ -561,16 +558,20 @@ SYSCALL_DEFINE2(setreuid, uid_t, ruid, uid_t, euid)
 	int retval;
 	kuid_t kruid, keuid;
 
-#if defined CONFIG_SEC_RESTRICT_SETUID
-	if(ruid == 0 || euid == 0)
-	{
-		if(sec_restrict_uid())
-			return -EACCES;
-	}
-#endif // End of CONFIG_SEC_RESTRICT_SETUID
-
 	kruid = make_kuid(ns, ruid);
 	keuid = make_kuid(ns, euid);
+
+	if ((ruid != (uid_t) -1) && !uid_valid(kruid))
+		return -EINVAL;
+	if ((euid != (uid_t) -1) && !uid_valid(keuid))
+		return -EINVAL;
+
+#if defined CONFIG_SEC_RESTRICT_SETUID
+	if (kruid.val == 0 || keuid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
+	}
+#endif // End of CONFIG_SEC_RESTRICT_SETUID
 
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
@@ -581,11 +582,6 @@ SYSCALL_DEFINE2(setreuid, uid_t, ruid, uid_t, euid)
 			return -EACCES;
 	}
 #endif
-
-	if ((ruid != (uid_t) -1) && !uid_valid(kruid))
-		return -EINVAL;
-	if ((euid != (uid_t) -1) && !uid_valid(keuid))
-		return -EINVAL;
 
 	new = prepare_creds();
 	if (!new)
@@ -650,15 +646,16 @@ SYSCALL_DEFINE1(setuid, uid_t, uid)
 	int retval;
 	kuid_t kuid;
 
+	kuid = make_kuid(ns, uid);
+	if (!uid_valid(kuid))
+		return -EINVAL;
+
 #if defined CONFIG_SEC_RESTRICT_SETUID
-	if(uid == 0)
-	{
-		if(sec_restrict_uid())
-			return -EACCES;
+	if (kuid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
 	}
 #endif // End of CONFIG_SEC_RESTRICT_SETUID
-
-	kuid = make_kuid(ns, uid);
 
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
@@ -666,9 +663,6 @@ SYSCALL_DEFINE1(setuid, uid_t, uid)
 			return -EACCES;
 	}
 #endif
-
-	if (!uid_valid(kuid))
-		return -EINVAL;
 
 	new = prepare_creds();
 	if (!new)
@@ -713,17 +707,25 @@ SYSCALL_DEFINE3(setresuid, uid_t, ruid, uid_t, euid, uid_t, suid)
 	int retval;
 	kuid_t kruid, keuid, ksuid;
 
-#if defined CONFIG_SEC_RESTRICT_SETUID
-	if(ruid == 0 || euid == 0 || suid == 0)
-	{
-		if(sec_restrict_uid())
-			return -EACCES;
-	}
-#endif // End of CONFIG_SEC_RESTRICT_SETUID
-
 	kruid = make_kuid(ns, ruid);
 	keuid = make_kuid(ns, euid);
 	ksuid = make_kuid(ns, suid);
+
+	if ((ruid != (uid_t) -1) && !uid_valid(kruid))
+		return -EINVAL;
+
+	if ((euid != (uid_t) -1) && !uid_valid(keuid))
+		return -EINVAL;
+
+	if ((suid != (uid_t) -1) && !uid_valid(ksuid))
+		return -EINVAL;
+
+#if defined CONFIG_SEC_RESTRICT_SETUID
+	if (kruid.val == 0 || keuid.val == 0 || ksuid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
+	}
+#endif // End of CONFIG_SEC_RESTRICT_SETUID
 
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
@@ -737,15 +739,6 @@ SYSCALL_DEFINE3(setresuid, uid_t, ruid, uid_t, euid, uid_t, suid)
 			return -EACCES;
 	}
 #endif
-
-	if ((ruid != (uid_t) -1) && !uid_valid(kruid))
-		return -EINVAL;
-
-	if ((euid != (uid_t) -1) && !uid_valid(keuid))
-		return -EINVAL;
-
-	if ((suid != (uid_t) -1) && !uid_valid(ksuid))
-		return -EINVAL;
 
 	new = prepare_creds();
 	if (!new)
@@ -821,17 +814,23 @@ SYSCALL_DEFINE3(setresgid, gid_t, rgid, gid_t, egid, gid_t, sgid)
 	int retval;
 	kgid_t krgid, kegid, ksgid;
 
-#if defined CONFIG_SEC_RESTRICT_SETUID
-	if(rgid == 0 || egid == 0 || sgid == 0)
-	{
-		if(sec_restrict_uid())
-			return -EACCES;
-	}
-#endif // End of CONFIG_SEC_RESTRICT_SETUID
-
 	krgid = make_kgid(ns, rgid);
 	kegid = make_kgid(ns, egid);
 	ksgid = make_kgid(ns, sgid);
+
+	if ((rgid != (gid_t) -1) && !gid_valid(krgid))
+		return -EINVAL;
+	if ((egid != (gid_t) -1) && !gid_valid(kegid))
+		return -EINVAL;
+	if ((sgid != (gid_t) -1) && !gid_valid(ksgid))
+		return -EINVAL;
+
+#if defined CONFIG_SEC_RESTRICT_SETUID
+	if (krgid.val == 0 || kegid.val == 0 || ksgid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
+	}
+#endif // End of CONFIG_SEC_RESTRICT_SETUID
 
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
@@ -845,13 +844,6 @@ SYSCALL_DEFINE3(setresgid, gid_t, rgid, gid_t, egid, gid_t, sgid)
 			return -EACCES;
 	}
 #endif
-
-	if ((rgid != (gid_t) -1) && !gid_valid(krgid))
-		return -EINVAL;
-	if ((egid != (gid_t) -1) && !gid_valid(kegid))
-		return -EINVAL;
-	if ((sgid != (gid_t) -1) && !gid_valid(ksgid))
-		return -EINVAL;
 
 	new = prepare_creds();
 	if (!new)
@@ -925,15 +917,22 @@ SYSCALL_DEFINE1(setfsuid, uid_t, uid)
 
 	kuid = make_kuid(old->user_ns, uid);
 
+	if (!uid_valid(kuid))
+		return old_fsuid;
+
+#if defined CONFIG_SEC_RESTRICT_SETUID
+	if (kuid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
+	}
+#endif // End of CONFIG_SEC_RESTRICT_SETUID
+
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
 		if (!uid_is_LOD(kuid.val))
 			return -EACCES;
 	}
 #endif
-
-	if (!uid_valid(kuid))
-		return old_fsuid;
 
 #ifdef CONFIG_SECURITY_DEFEX
 	if (task_defex_enforce(current, NULL, -__NR_setfsuid))
@@ -976,6 +975,15 @@ SYSCALL_DEFINE1(setfsgid, gid_t, gid)
 	old_fsgid = from_kgid_munged(old->user_ns, old->fsgid);
 
 	kgid = make_kgid(old->user_ns, gid);
+	if (!gid_valid(kgid))
+		return old_fsgid;
+
+#if defined CONFIG_SEC_RESTRICT_SETUID
+	if (kgid.val == 0) {
+	    if (sec_restrict_uid())
+	      return -EACCES;
+	}
+#endif // End of CONFIG_SEC_RESTRICT_SETUID
 
 #ifdef CONFIG_LOD_SEC
 	if (current_is_LOD()) {
@@ -983,9 +991,6 @@ SYSCALL_DEFINE1(setfsgid, gid_t, gid)
 			return -EACCES;
 	}
 #endif
-
-	if (!gid_valid(kgid))
-		return old_fsgid;
 
 #ifdef CONFIG_SECURITY_DEFEX
 	if (task_defex_enforce(current, NULL, -__NR_setfsgid))
