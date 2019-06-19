@@ -700,8 +700,7 @@ int __secure_computing(const struct seccomp_data *sd)
 		return 0;
 
 	this_syscall = sd ? sd->nr :
-		syscall_get_nr(current, task_pt_regs(current));
-
+	syscall_get_nr(current, task_pt_regs(current));
 	switch (mode) {
 	case SECCOMP_MODE_STRICT:
 		__secure_computing_strict(this_syscall);  /* may call do_exit */
