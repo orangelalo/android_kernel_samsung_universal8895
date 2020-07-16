@@ -471,7 +471,8 @@
 			dm-type = <DM_CPU_CL0>;
 
 			min-freq = <455000>;
-
+                        max-freq = <2002000>;
+			
 			/* PM QoS Class ID*/
 			pm_qos-min-class = <3>;
 			pm_qos-max-class = <4>;
@@ -516,7 +517,8 @@
 			dm-type = <DM_CPU_CL1>;
 
 			min-freq = <741000>;
-
+                        max-freq = <2808000>;
+			
 			/* PM QoS Class ID*/
 			pm_qos-min-class = <5>;
 			pm_qos-max-class = <6>;
@@ -776,8 +778,8 @@
 		gpu_pmqos_cpu_cluster_num = <2>;
 		gpu_pmu_status_reg_offset = <0x40E4>;
 		gpu_pmu_status_local_pwr_mask = <0xF>; /*0xF << 0*/
-		gpu_max_clock = <546000>;
-		gpu_max_clock_limit = <546000>;
+		gpu_max_clock = <839000>;
+		gpu_max_clock_limit = <839000>;
 		gpu_min_clock = <260000>;
 		gpu_dvfs_start_clock = <260000>;
 		gpu_dvfs_bl_config_clock = <260000>;
@@ -791,7 +793,7 @@
 		gpu_dvfs_time_interval = <5>; /*1 tick : 10ms*/
 		gpu_default_wakeup_lock = <1>;
 		gpu_dynamic_abb = <0>;
-		gpu_early_clk_gating = <0>;
+		gpu_early_clk_gatin = <0>;
 		gpu_dvs = <0>;
 		gpu_inter_frame_pm = <1>;
 		gpu_perf_gathering = <0>;
@@ -799,7 +801,7 @@
 		gpu_dvfs_polling_time = <30>;
 		gpu_pmqos_int_disable = <1>;
 		gpu_pmqos_mif_max_clock = <1794000>;
-		gpu_pmqos_mif_max_clock_base = <546000>;
+		gpu_pmqos_mif_max_clock_base = <839000>;
 		gpu_cl_dvfs_start_base = <455000>;
 		gpu_debug_level = <3>; /*DEBUG(1) INFO(2) WARNING(3) ERROR(4)*/
 		gpu_trace_level = <8>; /*TRACE_ALL*/
@@ -809,7 +811,7 @@
 		gpu_vk_boost_max_lock = <338000>;
 		gpu_vk_boost_mif_min_lock = <1794000>;
 		gpu_bts_support = <1>;
-		gpu_asv_cali_lock_val = <546000>; /*Should check this value when MALI_ASV_CALIBRATION_SUPPORT is enabled*/
+		gpu_asv_cali_lock_val = <839000>; /*Should check this value when MALI_ASV_CALIBRATION_SUPPORT is enabled*/
 		gpu_set_pmu_duration_reg = <0x40F0>; /* only for KC for now*/
 		gpu_set_pmu_duration_val = <0xfffff363>; /* only for KC for now*/
 	};
@@ -5061,51 +5063,41 @@
 			device_type = "cpufreq-userctrl";
 			shared-cpus = "0-3";
 
-			user-default-qos = <715000>;
-		};
-
-		domain@1 {
-			device_type = "cpufreq-userctrl";
-			shared-cpus = "4-7";
-
-			user-default-qos = <962000>;
+			user-default-qos = <455000>;
 
 			min-limit {
 				ctrl-type = <PM_QOS_MIN_LIMIT>;
 				execution-mode = <AARCH64_MODE>;
 					/* big	    lit */
-				table = < 2314000 1690000
-					2158000 715000
-					2002000 715000
-					1937000 715000
-					1807000 715000
-					1703000 715000
-					1469000 715000
-					1261000 715000
-					1170000 715000
-					1066000 715000
-					 962000 715000
-					 858000 715000
-					 741000 715000>;
+				table = < 2808000 2002000 >;
 			};
 
 			max-limit {
 				ctrl-type = <PM_QOS_MAX_LIMIT>;
 				execution-mode = <AARCH64_MODE>;
 					/* big	    lit */
-				table = < 2314000 1690000
-					2158000 1690000
-					2002000 1690000
-					1937000 1690000
-					1807000 1690000
-					1703000 1690000
-					1469000 1690000
-					1261000 1690000
-					1170000 1690000
-					1066000 1690000
-					 962000 1690000
-					 858000 1690000
-					 741000 1690000 >;
+				table = < 2808000 2002000 >;
+			};
+
+		};
+		domain@1 {
+			device_type = "cpufreq-userctrl";
+			shared-cpus = "4-7";
+
+			user-default-qos = <741000>;
+
+			min-limit {
+				ctrl-type = <PM_QOS_MIN_LIMIT>;
+				execution-mode = <AARCH64_MODE>;
+					/* big	    lit */
+				table = < 2808000 2002000 >;
+			};
+
+			max-limit {
+				ctrl-type = <PM_QOS_MAX_LIMIT>;
+				execution-mode = <AARCH64_MODE>;
+					/* big	    lit */
+				table = < 2808000 2002000 >;
 			};
 
 		};
